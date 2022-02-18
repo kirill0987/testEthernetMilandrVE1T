@@ -1,0 +1,66 @@
+[submodule "mtr_libs/mtr_button"]
+	path = mtr_libs/mtr_button
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Periphery/Gpio/mtr_button.git
+[submodule "mtr_libs/mtr_crc"]
+	path = mtr_libs/mtr_crc
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Crc/mtr_crc.git
+[submodule "mtr_libs/mtr_uart_base"]
+	path = mtr_libs/mtr_uart_base
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Network/Uart/mtr_uart_base.git
+[submodule "mtr_libs/mtr_led"]
+	path = mtr_libs/mtr_led
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Periphery/Gpio/mtr_led.git
+[submodule "mtr_libs/mtr_port"]
+	path = mtr_libs/mtr_port
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Periphery/Gpio/mtr_port.git
+[submodule "mtr_libs/mtr_service"]
+	path = mtr_libs/mtr_service
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Others/mtr_service.git
+[submodule "mtr_libs/mtr_timer"]
+	path = mtr_libs/mtr_timer
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Timers/mtr_timer.git
+[submodule "cmsis_lib"]
+	path = cmsis_lib
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Others/cmsis_lib.git
+[submodule "mtr_libs/mtr_eeprom"]
+	path = mtr_libs/mtr_eeprom
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Periphery/Memory/mtr_eeprom.git
+[submodule "mtr_libs/mtr_usb_cdc"]
+	path = mtr_libs/mtr_usb_cdc
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Network/Usb/mtr_usb_cdc.git
+[submodule "mtr_libs/mtr_modbus_base"]
+	path = mtr_libs/mtr_modbus_base
+	url = git@192.168.137.2:/home/git/MilandrGit/1986VE92/Submodules/Network/Modbus/mtr_modbus_base.git
+[submodule "mtr_libs/mtr_modbus"]
+	path = mtr_libs/mtr_modbus
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Network/Modbus/mtr_modbus.git
+[submodule "mtr_libs/mtr_modbus_slave"]
+	path = mtr_libs/mtr_modbus_slave
+	url = git@192.168.137.2:/home/git/MilandrGit/1986VE92/Submodules/Network/Modbus/mtr_modbus_slave.git
+[submodule "mtr_libs/mtr_tcpip"]
+	path = mtr_libs/mtr_tcpip
+	url = git@192.168.137.2:/home/git/MilandrGit/1986VE1T/Network/Ethernet/mtr_tcpip.git
+[submodule "mtr_libs/mtr_ethernet"]
+	path = mtr_libs/mtr_ethernet
+	url = git@git.kb:/home/git/MilandrGit/1986VE1T/Network/Ethernet/mtr_ethernet.git/
+[submodule "mtr_libs/mtr_planner"]
+	path = mtr_libs/mtr_planner
+	url = git@git.kb:/home/git/MilandrGit/1986VE92/Submodules/Others/mtr_planner.git
+[submodule "Addressing"]
+	path = mtr_libs/Addressing
+	url = git@git.kb:/home/git/ProjectsGit/BoardStack/x32/Addressing.git
+[submodule "mtr_libs/BaseCanDataNetwork"]
+	path = mtr_libs/BaseCanDataNetwork
+	url = git@git.kb:/home/git/MilandrGit/BaseCanDataNetwork.git
+[submodule "mtr_libs/BaseDataManager"]
+	path = mtr_libs/BaseDataManager
+	url = git@git.kb:/home/git/MilandrGit/BaseDataManager.git
+[submodule "mtr_libs/BaseNetworkDevices"]
+	path = mtr_libs/BaseNetworkDevices
+	url = git@git.kb:/home/git/MilandrGit/BaseNetworkDevices.git
+[submodule "mtr_libs/mtr_can"]
+	path = mtr_libs/mtr_can
+	url = git@192.168.137.2:/home/git/MilandrGit/1986VE92/Submodules/Network/Can/mtr_can.git
+[submodule "mtr_libs/SlaveModbusDevice"]
+	path = mtr_libs/SlaveModbusDevice
+	url = git@git.kb:/home/git/ProjectsGit/BoardStack/Submodules/x32/SlaveModbusDevice.git
