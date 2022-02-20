@@ -6,14 +6,15 @@
 #include "mtr_libs/mtr_planner/mtr_planner.h"
 
 #include "inc/inits.h"
+#include "inc/tasks.h"
 
 int main(void)
 {
   	disableInterrupts();
 
  	initDevice();
- 	initData();
- 	initGPIO();
+ 	//initData();
+ 	//initGPIO();
  	initNetwork();
  	//initPlanner();
 
@@ -22,5 +23,9 @@ int main(void)
 	for (;;)
 	{
 		//MTR_Planner_runTasks();
+		 ETH_TaskProcess(MDR_ETHERNET1);
 	}
 }
+
+
+

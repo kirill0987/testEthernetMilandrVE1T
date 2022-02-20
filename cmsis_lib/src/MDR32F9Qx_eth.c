@@ -706,7 +706,7 @@ FlagStatus ETH_GetFlagStatus(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t ETH_MAC_
 	assert_param(IS_ETH_ALL_PERIPH(ETHERNETx));
 	assert_param(IS_ETH_MAC_FLAG(ETH_MAC_FLAG));
 
-	if(ETHERNETx->ETH_IFR & ETH_MAC_FLAG){
+	if(ETHERNETx->ETH_STAT & ETH_MAC_FLAG){
 		bitstatus = SET;
 	}
 	else{

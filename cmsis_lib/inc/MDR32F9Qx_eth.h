@@ -539,6 +539,8 @@ typedef union {
  * 	@{
  */
 
+FlagStatus ETH_GetFlagStatus(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t ETH_MAC_FLAG);
+
 void ETH_ClockDeInit(void);
 void ETH_PHY_ClockConfig(uint32_t clock_source, uint32_t PHY_HCLKdiv);
 void ETH_BRGInit(uint32_t ETH_HCLKdiv);
