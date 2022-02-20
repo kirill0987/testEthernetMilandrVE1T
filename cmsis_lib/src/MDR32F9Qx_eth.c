@@ -925,6 +925,9 @@ uint32_t ETH_WritePHYRegister(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t PHYAddr
 	tmpreg = ETHERNETx->ETH_MDIO_CTRL;
 	/* Keep only the CSR Clock Range CR[2:0] bits value */
 	tmpreg &= ~ETH_MDIO_CTRL_DIV_Msk;
+
+	tmpreg &= ~(1 << ETH_MDIO_CTRL_OP_Pos); // !!!-------  Исправление --------!!!
+
 	/* Prepare the MII address register value */
 	tmpreg |= (uint32_t)(PHYAddress << 8) | (PHYReg << 0) | (0 << ETH_MDIO_CTRL_OP_Pos) | (1 << ETH_MDIO_CTRL_RDY_Pos) | (1 << ETH_MDIO_CTRL_PRE_EN_Pos) | (1<<5);
 	/* Give the value to the MII data register */

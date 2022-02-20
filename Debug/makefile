@@ -33,10 +33,6 @@ RM := rm -rf
 -include cmsis_lib/src/subdir.mk
 -include cmsis_boot/startup/subdir.mk
 -include cmsis_boot/subdir.mk
--include classes/NetworkDevicesRS/subdir.mk
--include classes/NetworkCAN/subdir.mk
--include classes/DataModel/subdir.mk
--include classes/subdir.mk
 -include subdir.mk
 -include objects.mk
 

@@ -12,10 +12,9 @@ int main(void)
   	disableInterrupts();
 
  	initDevice();
- 	//initBeforeData();
- 	//initGPIO();
- 	//initNetwork();
- 	//initAfterData();
+ 	initData();
+ 	initGPIO();
+ 	initNetwork();
  	//initPlanner();
 
 	__enable_irq();
@@ -25,4 +24,3 @@ int main(void)
 		//MTR_Planner_runTasks();
 	}
 }
-

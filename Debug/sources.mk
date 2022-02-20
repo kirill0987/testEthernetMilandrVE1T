@@ -27,10 +27,6 @@ CPP_DEPS :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-classes \
-classes/DataModel \
-classes/NetworkCAN \
-classes/NetworkDevicesRS \
 cmsis_boot/startup \
 cmsis_boot \
 cmsis_lib/src \

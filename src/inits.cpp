@@ -10,195 +10,93 @@
 #include "mtr_libs/mtr_led/mtr_led.h"
 #include "mtr_libs/mtr_button/mtr_button.h"
 #include "mtr_libs/SlaveModbusDevice/SlaveModbusDevice.h"
-
-#include "classes/NetworkCAN/CanNetworking.h"
-#include "classes/DataManager.h"
-
-#include "classes/DataModel/Servo.h"
+#include "cmsis_lib/inc/MDR32F9Qx_eth.h"
+#include "MDR32F9Qx_rst_clk.h"
 
 #include "inc/tasks.h"
 #include "inc/device.h"
 
-uint16_t inputRegister[INPUT_REGISTERS_AMOUNT] = {0};
-uint16_t holdingRegister [HOLDING_REGISTERS_AMOUNT] = {0};
 
-MTR_Modbus_t* modbusUart1 		= nullptr;
-MTR_Modbus_t* modbusUart2 		= nullptr;
-MTR_Modbus_t* modbusEthernet 	= nullptr;
-CanNetworking* canNetworking	= nullptr;
-DataManager* dataManager		= nullptr;
+#define MAC_5				0xC8
+#define MAC_4				0x60
+#define MAC_3				0x00
+#define MAC_2				0x67
+#define MAC_1				0xB1
+#define MAC_0				0x6D
 
-SlaveModbusDevice<2, 1>* moduleDI1 = nullptr;
-SlaveModbusDevice<2, 1>* moduleDI2 = nullptr;
-SlaveModbusDevice<2, 1>* moduleDI3 = nullptr;
-SlaveModbusDevice<2, 1>* moduleDI4 = nullptr;
-SlaveModbusDevice<1, 2>* moduleDO1 = nullptr;
-SlaveModbusDevice<20, 1>* moduleAI1 = nullptr;
+uint32_t InputFrame[1514/4];
 
-Servo* servo = nullptr;
-
-#ifdef CONFIG_ETHERNET_TIMER
-MDR_TIMER_TypeDef* ethTimer;
-#endif
-
-void initBeforeData()
+void initData()
 {
-	servo = new Servo();
 
-	dataManager =
-		new DataManager();
-
-	canNetworking =
-		new CanNetworking( 0x00 , dataManager );
 }
 
 void initGPIO()
 {
-	MTR_Led_init(	WORK_LED,
-					CONTACT_WORK_LED );
 
-	MTR_Led_off( WORK_LED );
-
-	MTR_Led_init(	WARNING_LED,
-					CONTACT_WARNING_LED );
-
-	MTR_Led_off( WARNING_LED );
-
-	MTR_Button_init(	INCREMENT_ADDRESS_SLAVE_FOR_ASSIGNMENT_MODE_MASTER_BUTTON,
-						CONTACT_INCREMENT_ADDRESS_ASSIGNMENT_MODE_MASTER_BUTTON,
-						ReverseButton);
-
-	MTR_Button_init(	ASSIGNMENT_MODE_MASTER_BUTTON,
-						CONTACT_ASSIGNMENT_MODE_MASTER_BUTTON,
-						NormalButton);
-
-	MTR_Button_init(	FEEDBACK_WIRTE_ADDRESS_SLAVE_BUTTON,
-						CONTACT_FEEDBACK_WIRTE_ADDRESS_SLAVE_BUTTON,
-						NormalButton);
-
-	MTR_Port_initDigital(POWER_EXTERNAL_RS_ON_INTERFACE_EXPANSION_BOARD, OUT);
-	MTR_Port_setPin(POWER_EXTERNAL_RS_ON_INTERFACE_EXPANSION_BOARD);
-
-	MTR_Port_initDigital(CAN1_ENABLE_TX_RX, OUT);
-	MTR_Port_setPin(CAN1_ENABLE_TX_RX);
 }
 
 void initNetwork()
 {
-	//--RS--
-	MTR_Uart_setEnPin(INTERNAL_RS, ENABLE_INTERNAL_RS);
-	MTR_Uart_setTxPin(INTERNAL_RS, TX_INTERNAL_RS);
-	MTR_Uart_setRxPin(INTERNAL_RS, RX_INTERNAL_RS);
-	MTR_Uart_setType(INTERNAL_RS, RS485);
-	MTR_Uart_setSpeed(INTERNAL_RS, 57600);
+	static ETH_InitTypeDef  ETH_InitStruct;
 
-	modbusUart1 = MTR_Modbus_master_init(INTERNAL_RS);
+	//Сброс clock registers по умолчанию
+	ETH_ClockDeInit();
 
-	MTR_Uart_setEnPin(EXTERNAL_RS, ENABLE_EXTERNAL_RSON_INTERFACE_EXPANSION_BOARD);
-	MTR_Uart_setTxPin(EXTERNAL_RS, TX_EXTERNAL_RS);
-	MTR_Uart_setRxPin(EXTERNAL_RS, RX_EXTERNAL_RS);
-	MTR_Uart_setType(EXTERNAL_RS, RS485);
-	MTR_Uart_setSpeed(EXTERNAL_RS, 57600);
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_DMA, ENABLE);//?? Errata
 
-	modbusUart2 = MTR_Modbus_master_init(EXTERNAL_RS);
-
-	//--CAN--
-	canNetworking->initCan1();
-
-	//Internal RS addressing initialization
-	Addressing_initData( modbusUart1 );
-
-	//--Ethernet--
-	//Use this if there are two masters
-	if( Addressing_getPreviousAssignment() )
+	// Enable HSE2 oscillator
+	RST_CLK_HSE2config(RST_CLK_HSE2_ON);
+	if(RST_CLK_HSE2status() == ERROR)
 	{
-		//192.168.1.10
-		MTR_Tcp_setAddress(0xC0A8010A);
-	}
-	else
-	{
-		//192.168.1.11
-		MTR_Tcp_setAddress(0xC0A8010B);
+		while(1);
+		//Если ошибка жри говно в бесконечном цикле,
+		//ибо ошибок не должно быть
 	}
 
-	//192.168.1.1
-	MTR_Tcp_setGateway(0xC0A80101);
+	//Config PHY clock
+	ETH_PHY_ClockConfig(ETH_PHY_CLOCK_SOURCE_HSE2, ETH_PHY_HCLKdiv1);
 
-	//255.255.0.0
-	MTR_Tcp_setMask(0xFFFF0000);
+	//Init the BRG ETHERNET
+	ETH_BRGInit(ETH_HCLKdiv1);
 
-	modbusEthernet = MTR_Modbus_slave_init(Ethernet, 1);
+	//Enable the ETHERNET clock
+	ETH_ClockCMD(ETH_CLK1, ENABLE);
 
-	for ( uint8_t i = 0; i < INPUT_REGISTERS_AMOUNT; i++ )
-	{
-		MTR_Modbus_slave_addInputRegister(modbusEthernet, i, &inputRegister[i]);
-	}
+	ETH_DeInit(MDR_ETHERNET1);
 
-	for ( uint8_t i = 0; i < HOLDING_REGISTERS_AMOUNT; i++ )
-	{
-		MTR_Modbus_slave_addHoldingRegister(modbusEthernet, i, &holdingRegister[i]);
-	}
+	//Заполнение структуры значениям по умолчанию
+	ETH_StructInit(&ETH_InitStruct);
 
-#ifdef CONFIG_ETHERNET_TIMER
-	MTR_Timer_init(CONFIG_ETHERNET_TIMER, 0, 1, (uint16_t) (CONFIG_CLOCK_TIMER_HZ / 1000));
-	MTR_Timer_initIT(CONFIG_ETHERNET_TIMER, TIMER_STATUS_CNT_ARR, enable);
-	MTR_Timer_initNvic(CONFIG_ETHERNET_TIMER);
-	MTR_Timer_setPriority(CONFIG_ETHERNET_TIMER, 0);
-	NVIC_SetPriority(MTR_Timer_getIrq(CONFIG_ETHERNET_TIMER), 0);
-	ethTimer = MTR_Timer_getOriginStruct(CONFIG_ETHERNET_TIMER);
-	MTR_Timer_start(CONFIG_ETHERNET_TIMER);
-#endif
+	//Set the speed of the chennel
+	ETH_InitStruct.ETH_PHY_Mode = ETH_PHY_MODE_AutoNegotiation;
+	ETH_InitStruct.ETH_Transmitter_RST = SET;
+	ETH_InitStruct.ETH_Receiver_RST = SET;
 
-	NVIC_SetPriority(UART1_IRQn, 2);
-	NVIC_SetPriority(UART2_IRQn, 2);
-	NVIC_SetPriority(MTR_Timer_getIrq(CONFIG_PLANNER_TIMER), 3);
-	NVIC_SetPriority(MTR_Timer_getIrq(CONFIG_UART_TIMER), 4);
-}
+	//Set the buffer mode
+	ETH_InitStruct.ETH_Buffer_Mode = ETH_BUFFER_MODE_LINEAR;
 
-void initAfterData()
-{
-	moduleDI1 = new SlaveModbusDevice<2, 1>(2, modbusUart1);
+	ETH_InitStruct.ETH_Source_Addr_HASH_Filter = DISABLE;
 
-	moduleDI2 = new SlaveModbusDevice<2, 1>(3, modbusUart1);
+	//Set the MAC address.
+	ETH_InitStruct.ETH_MAC_Address[2] = (MAC_0<<8)|MAC_1;
+	ETH_InitStruct.ETH_MAC_Address[1] = (MAC_2<<8)|MAC_3;
+	ETH_InitStruct.ETH_MAC_Address[0] = (MAC_4<<8)|MAC_5;
 
-	moduleDI3 = new SlaveModbusDevice<2, 1>(4, modbusUart1);
+	ETH_InitStruct.ETH_Delimiter = 0x1000;
 
-	moduleDI4 = new SlaveModbusDevice<2, 1>(5, modbusUart1);
+	//Перенос абстракции в регистры
+	ETH_Init(MDR_ETHERNET1, &ETH_InitStruct);
 
-	moduleDO1 = new SlaveModbusDevice<1, 2>(6, modbusUart1);
+	//Enable PHY module
+	ETH_PHYCmd(MDR_ETHERNET1, ENABLE);
 
-	moduleAI1 = new SlaveModbusDevice<20, 1>(7, modbusUart1);
+	//Запуск ehetnet
+	ETH_Start(MDR_ETHERNET1);
+
 }
 
 void initPlanner()
 {
-	//--Button--
-	MTR_Planner_addTask( MTR_Button_update, 10, true, UpdateTask );
-
-	//--Nwtwork RS--
-	MTR_Planner_addTask( modbusPollUart1, 30, Addressing_getPreviousAssignment(), NetworkTask );
-	MTR_Planner_addTask( modbusPollUart2, 30, true, NetworkTask );
-	MTR_Planner_addTask( noCommandTimeoutInternalRS, 3000, true, NetworkTask);
-
-	//--CAN Receiver--
-	MTR_Planner_addTask([](){canNetworking->canHandler();}, 1, true, NetworkTask);
-
-	//--CAN Transmitter--
-	MTR_Planner_addTask([](){canNetworking->initFrameServoCan1();}, 5, true, NetworkTask);
-
-	//--LEDs--
-	MTR_Planner_addTask( resetBlinkWorkLed, 10, false, UpdateTask );
-	MTR_Planner_addTask( switchWarningLed, 100, !Addressing_getPreviousAssignment(), UpdateTask );
-
-#ifndef CONFIG_ETHERNET_TIMER
-	MTR_Planner_addTask(
-			[](){
-					MTR_Ethernet_perform();
-					MTR_Tcp_doNetworkStuff(MDR_ETHERNET1);
-				}, 1, true, UpdateTask);
-#endif
-
-	MTR_Planner_reset( MTR_Planner_getTask( noCommandTimeoutInternalRS ) );
-	MTR_Planner_reset( MTR_Planner_getTask( resetBlinkWorkLed ) );
     MTR_Planner_init();
 }

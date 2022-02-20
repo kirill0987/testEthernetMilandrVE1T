@@ -37,15 +37,7 @@ src/inits.o: ../src/inits.cpp \
  E:\GitKraken\testEthernetMilandrVE1T/mtr_libs/SlaveModbusDevice/SlaveModbusDevice.h \
  E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseNetworkDevices/ModbusDevice.h \
  E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseNetworkDevices/NetworkDevice.h \
- E:\GitKraken\testEthernetMilandrVE1T/classes/NetworkCAN/CanNetworking.h \
- E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseCanDataNetwork/BaseCanNetwork.h \
- E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/mtr_can/mtr_can.h \
- E:\GitKraken\testEthernetMilandrVE1T\cmsis_lib\inc/MDR32F9Qx_can.h \
- E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseDataManager/BaseDataManager.h \
- E:\GitKraken\testEthernetMilandrVE1T\inc/dataenums.h \
- E:\GitKraken\testEthernetMilandrVE1T/classes/DataManager.h \
- E:\GitKraken\testEthernetMilandrVE1T/classes/DataModel/Servo.h \
- E:\GitKraken\testEthernetMilandrVE1T/classes/DataModel/Servo_defines.h \
+ E:\GitKraken\testEthernetMilandrVE1T\cmsis_lib\inc/MDR32F9Qx_rst_clk.h \
  E:\GitKraken\testEthernetMilandrVE1T/inc/tasks.h \
  E:\GitKraken\testEthernetMilandrVE1T/inc/device.h
 
@@ -125,23 +117,7 @@ E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseNetworkDevices/ModbusDevice.h:
 
 E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseNetworkDevices/NetworkDevice.h:
 
-E:\GitKraken\testEthernetMilandrVE1T/classes/NetworkCAN/CanNetworking.h:
-
-E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseCanDataNetwork/BaseCanNetwork.h:
-
-E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/mtr_can/mtr_can.h:
-
-E:\GitKraken\testEthernetMilandrVE1T\cmsis_lib\inc/MDR32F9Qx_can.h:
-
-E:\GitKraken\testEthernetMilandrVE1T\mtr_libs/BaseDataManager/BaseDataManager.h:
-
-E:\GitKraken\testEthernetMilandrVE1T\inc/dataenums.h:
-
-E:\GitKraken\testEthernetMilandrVE1T/classes/DataManager.h:
-
-E:\GitKraken\testEthernetMilandrVE1T/classes/DataModel/Servo.h:
-
-E:\GitKraken\testEthernetMilandrVE1T/classes/DataModel/Servo_defines.h:
+E:\GitKraken\testEthernetMilandrVE1T\cmsis_lib\inc/MDR32F9Qx_rst_clk.h:
 
 E:\GitKraken\testEthernetMilandrVE1T/inc/tasks.h:
 
