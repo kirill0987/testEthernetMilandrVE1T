@@ -2,16 +2,6 @@
 
 #include <malloc.h>
 
-#include "mtr_libs/Addressing/addressing.h"
-#include "mtr_libs/mtr_modbus/mtr_modbus.h"
-#include "mtr_libs/mtr_planner/mtr_planner.h"
-#include "mtr_libs/mtr_modbus_base/mtr_modbus_base.h"
-#include "mtr_libs/mtr_modbus_slave/mtr_modbus_slave.h"
-#include "mtr_libs/mtr_ethernet/mtr_ethernet.h"
-#include "mtr_libs/mtr_tcpip/mtr_tcpip.h"
-#include "mtr_libs/mtr_led/mtr_led.h"
-#include "mtr_libs/mtr_button/mtr_button.h"
-#include "mtr_libs/SlaveModbusDevice/SlaveModbusDevice.h"
 #include "MDR32F9Qx_rst_clk.h"
 
 #include "inc/tasks.h"
@@ -26,20 +16,39 @@
 // Должны располагаться в адресах начиная с 0х2010_0000 для возможности работы DMA в режиме FIFO
 #define  MAX_ETH_TX_DATA_SIZE 1514 / 4
 #define  MAX_ETH_RX_DATA_SIZE 1514 / 4
-uint8_t  FrameTx[MAX_ETH_TX_DATA_SIZE]; //__attribute__((section("EXECUTABLE_MEMORY_SECTION"))) __attribute__ ((aligned (4)));
-uint32_t FrameRx[MAX_ETH_RX_DATA_SIZE]; //__attribute__((section("EXECUTABLE_MEMORY_SECTION"))) __attribute__ ((aligned (4)));
+uint8_t  FrameTx[MAX_ETH_TX_DATA_SIZE] __attribute__((section(".ramfunc"))) __attribute__ ((aligned (4)));
+uint32_t FrameRx[MAX_ETH_RX_DATA_SIZE] __attribute__((section(".ramfunc"))) __attribute__ ((aligned (4)));
+
+				 //__attribute__((section("EXECUTABLE_MEMORY_SECTION"))) __attribute__ ((aligned (4)));
 
 //	MAC адрес микроконтроллера
 uint8_t  MAC_SRC [] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
 
-void initData()
+void Clock_Init()
 {
+	/* Enable HSE (High Speed External) clock */
+	RST_CLK_HSEconfig(RST_CLK_HSE_ON);
+	while (RST_CLK_HSEstatus() != SUCCESS);
 
-}
+	/* Configures the CPU_PLL clock source */
+	RST_CLK_CPU_PLLconfig(RST_CLK_CPU_PLLsrcHSEdiv2, RST_CLK_CPU_PLLmul16);
 
-void initGPIO()
-{
+	/* Enables the CPU_PLL */
+	RST_CLK_CPU_PLLcmd(ENABLE);
+	while (RST_CLK_CPU_PLLstatus() == ERROR);
 
+	/* Enables the RST_CLK_PCLK_EEPROM */
+	RST_CLK_PCLKcmd(RST_CLK_PCLK_EEPROM, ENABLE);
+	/* Sets the code latency value */
+	EEPROM_SetLatency(EEPROM_Latency_5);
+
+	/* Select the CPU_PLL output as input for CPU_C3_SEL */
+	RST_CLK_CPU_PLLuse(ENABLE);
+	/* Set CPUClk Prescaler */
+	RST_CLK_CPUclkPrescaler(RST_CLK_CPUclkDIV1);
+
+	/* Select the CPU clock source */
+	RST_CLK_CPUclkSelection(RST_CLK_CPUclkCPU_C3);
 }
 
 void initNetwork()
@@ -90,7 +99,7 @@ void initNetwork()
 	ETH_InitStruct.ETH_MAC_Address[0] = (MAC_SRC[1] << 8) | MAC_SRC[0];
 
 	//	Разделение общей памяти на буферы для приемника и передатчика
-	ETH_InitStruct.ETH_Delimiter = 0x1000;
+	ETH_InitStruct.ETH_Dilimiter = 0x1000;
 
 	//	Разрешаем прием пакетов только на свой адрес,
 	//	Прием коротких пакетов также разрешен
@@ -111,12 +120,6 @@ void initNetwork()
 
 	ETH_Start(MDR_ETHERNET1);
 }
-
-void initPlanner()
-{
-    MTR_Planner_init();
-}
-
 
 //	Обработка входящего фрейма и высылка ответа
 void ETH_TaskProcess(MDR_ETHERNET_TypeDef * ETHERNETx)

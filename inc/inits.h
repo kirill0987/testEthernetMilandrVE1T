@@ -6,14 +6,13 @@
 #include "cmsis_boot/MDR1986VE1T.h"
 #include "cmsis_lib/inc/MDR32F9Qx_eth.h"
 
+void Clock_Init();
+
 //	Обработка входящего фрейма и высылка ответа
 void Ethernet_FillFrameTX(uint32_t frameL);
 //	Заполнение массива FrameTx фреймом заданной длины
 void ETH_TaskProcess(MDR_ETHERNET_TypeDef* ETHERNETx);
 
-void initData();
-void initGPIO();
 void initNetwork();
-void initPlanner();
 
 #endif /* INC_INITS_H_ */

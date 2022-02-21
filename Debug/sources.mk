@@ -31,26 +31,5 @@ cmsis_boot/startup \
 cmsis_boot \
 cmsis_lib/src \
 . \
-mtr_libs/Addressing \
-mtr_libs/BaseCanDataNetwork \
-mtr_libs/BaseDataManager \
-mtr_libs/BaseNetworkDevices \
-mtr_libs/SlaveModbusDevice \
-mtr_libs/mtr_button \
-mtr_libs/mtr_can \
-mtr_libs/mtr_crc \
-mtr_libs/mtr_eeprom \
-mtr_libs/mtr_ethernet \
-mtr_libs/mtr_led \
-mtr_libs/mtr_modbus \
-mtr_libs/mtr_modbus_base \
-mtr_libs/mtr_modbus_slave \
-mtr_libs/mtr_planner \
-mtr_libs/mtr_port \
-mtr_libs/mtr_service \
-mtr_libs/mtr_tcpip \
-mtr_libs/mtr_timer \
-mtr_libs/mtr_uart_base \
-mtr_libs/mtr_usb_cdc \
 src \
 

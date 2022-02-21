@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file	 MDR32F9Qx_eth.h
   * @author	 sidorov.a
-  * @version V1.4.0
+  * @version V1.3.0
   * @date    26.04.2013
   * @brief   This file contains all the the functions prototypes for the
   * 		 ethernet firmware library.
@@ -68,7 +68,7 @@ typedef struct {
 	  * @brief MAC General Config
 	  */
 
-	uint32_t			ETH_Delimiter;						/*!< Defines the boundaries of the transmitter and receiver buffers.
+	uint32_t			ETH_Dilimiter;						/*!< Defines the boundaries of the transmitter and receiver buffers.
 													 	 	 	 This parameter can be a value from 0 to 0x1FFF. */
 	uint32_t			ETH_DBG_Mode;						/*!< Select the mode of operation in debug mode.
 													 	 	 	 This parameter can be a value of @ref ETH_DBG_MODE. */
@@ -163,7 +163,7 @@ typedef struct {
 
 	uint32_t 			ETH_IPG;							/*!< The value of inter-packet interval for full duplex
 																 This parameter can be a value from 0 to 0xFFFF. */
-	uint32_t 			ETH_PSC;							/*!< Prescaler value increment values ​​BAG and JitterWnd.
+	uint32_t 			ETH_PSC;							/*!< Prescaler value increment values for BAG and JitterWnd.
 																 This parameter can be a value from 0 to 0xFFFF. */
 	uint32_t 			ETH_BAG;							/*!< The period value of the packets.
 																 This parameter can be a value from 0 to 0xFFFF. */
@@ -203,15 +203,6 @@ typedef union {
 /** @defgroup ETH_Exported_Macros ETH Exported Macros
   * @{
   */
-
-
-/** @defgroup ETH_Buf_Size
-  * @{
-  */
-
-#define ETH_BUFFER_SIZE_IN_BYTES                         ((uint32_t)0x2000)
-
-/** @} */ /* End of group ETH_Buf_Size */
 
 /** @defgroup ETH_MODE ETH_MODE
   * @{
@@ -430,7 +421,7 @@ typedef union {
 #define ETH_HCLKdiv64                      ((uint32_t)0x00000006)
 #define ETH_HCLKdiv128                     ((uint32_t)0x00000007)
 
-#define IS_ETH_CLOCK_BRG(BRG)              ((BRG) <= 7)
+#define IS_ETH_CLOCK_BRG(BRG)              (((BRG) >= 0) && ((BRG) <= 7))
 
 /** @} */ /* End of group ETHERNET_Clock_BRG */
 
@@ -525,11 +516,9 @@ typedef union {
 #define PHY_IT_MASKs					30
 #define PHY_ECTR						31
 
-#define IS_ETH_PHYReg(PHYreg)					(((PHYreg) <= 6) ||\
-												 ((PHYreg) == 18) ||\
-												 ((PHYreg) == 29) ||\
-												 ((PHYreg) == 30) ||\
-												 ((PHYreg) == 31))
+#define IS_ETH_PHYReg(PHYreg)					(((PHYreg >= 0 ) &&  (PHYreg <= 6)) ||\
+												 (PHYreg == 18) || (PHYreg == 29)   ||\
+												 (PHYreg == 30) || (PHYreg == 31))
 
 /** @} */ /* End of group PHY_Register_address */
 
@@ -538,8 +527,6 @@ typedef union {
 /** @defgroup ETH_Private_Function_Prototypes ETH Private Function Prototypes
  * 	@{
  */
-
-FlagStatus ETH_GetFlagStatus(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t ETH_MAC_FLAG);
 
 void ETH_ClockDeInit(void);
 void ETH_PHY_ClockConfig(uint32_t clock_source, uint32_t PHY_HCLKdiv);
@@ -563,10 +550,12 @@ FlagStatus ETH_GetPHYStatus(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t ETH_PHY_F
 uint16_t ETH_ReadPHYRegister(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t PHYAddress, uint16_t PHYReg);
 uint32_t ETH_WritePHYRegister(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t PHYAddress, uint16_t PHYReg, uint16_t PHYValue);
 uint32_t ETH_ReceivedFrame(MDR_ETHERNET_TypeDef * ETHERNETx, uint32_t * ptr_InputBuffer);
-uint32_t ETH_SendFrame(MDR_ETHERNET_TypeDef * ETHERNETx, uint32_t * ptr_OututBuffer, uint32_t BufLen);
+void ETH_SendFrame(MDR_ETHERNET_TypeDef * ETHERNETx, uint32_t * ptr_OututBuffer, uint32_t BufLen);
 void ETH_DMAPrepare(void);
 void ETH_DMAFrameRx(uint32_t * DstBuf, uint32_t BufferSize, uint32_t * SrcBuf);
 void ETH_DMAFrameTx(uint32_t * DstBuf, uint32_t BufferSize, uint32_t *  SrcBuf);
+
+FlagStatus ETH_GetFlagStatus(MDR_ETHERNET_TypeDef * ETHERNETx, uint16_t ETH_MAC_FLAG);
 
 /** @} */ /* End of group ETH_Private_Function_Prototypes */
 
