@@ -17,9 +17,7 @@
 #define  MAX_ETH_TX_DATA_SIZE 1514 / 4
 #define  MAX_ETH_RX_DATA_SIZE 1514 / 4
 uint8_t  FrameTx[MAX_ETH_TX_DATA_SIZE] __attribute__((section(".ramfunc"))) __attribute__ ((aligned (4)));
-uint32_t FrameRx[MAX_ETH_RX_DATA_SIZE] __attribute__((section(".ramfunc"))) __attribute__ ((aligned (4)));
-
-				 //__attribute__((section("EXECUTABLE_MEMORY_SECTION"))) __attribute__ ((aligned (4)));
+uint8_t FrameRx[MAX_ETH_RX_DATA_SIZE] __attribute__((section(".ramfunc"))) __attribute__ ((aligned (4)));
 
 //	MAC адрес микроконтроллера
 uint8_t  MAC_SRC [] = {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc};
@@ -140,7 +138,7 @@ void ETH_TaskProcess(MDR_ETHERNET_TypeDef * ETHERNETx)
 	if(ETHERNETx->ETH_R_Head != ETHERNETx->ETH_R_Tail)
 	{
 		//	Считывание входного фрейма
-		ETH_StatusPacketReceptionStruct.Status = ETH_ReceivedFrame(ETHERNETx, FrameRx);
+		ETH_StatusPacketReceptionStruct.Status = ETH_ReceivedFrame(ETHERNETx, (uint32_t*)FrameRx);
 
 		//	Считывание длины ответного фрейма
 		frameL = (uint16_t)((ptr_inpFrame[FR_HEAD_SIZE] << 8) | (ptr_inpFrame[FR_HEAD_SIZE + 1]));
@@ -182,14 +180,14 @@ void Ethernet_FillFrameTX(uint32_t frameL)
 	//	Определение колличества данных в Payload
 	uint32_t payloadL = frameL - FR_HEAD_SIZE;
 	//	Указатель на входящий фрейм для копирования SrcMAC
-	uint8_t * ptr_inpFrame = (uint8_t *) &FrameRx[0];
+	uint8_t* ptr_inpFrame = (uint8_t*) &FrameRx[0];
 	//	Указатель на заполняемый фрейм,
 	//  оставлено место "Поле управления передачей пакета"
-	uint8_t * ptr_TXFrame  = (uint8_t *) &FrameTx[4];
+	uint8_t* ptr_TXFrame  = (uint8_t*) &FrameTx[4];
 
 	//	Запись "Поле управления передачей пакета"
 	//  Указывается длина фрейма
-	*(uint32_t *)&FrameTx[0] = frameL;
+	*(uint32_t*)&FrameTx[0] = frameL;
 
 	//	Копируем адрес PC из входного пакета в DestMAC
 	ptr_TXFrame[0] 	= ptr_inpFrame[6];
